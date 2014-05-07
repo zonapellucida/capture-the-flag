@@ -1,6 +1,6 @@
 package com.maze;
 
-public class Corridor {
+public class Corridor implements Cloneable{
 	
 
 	private Corridor westDirection;
@@ -98,6 +98,21 @@ public class Corridor {
 		this.theChar = theChar;
 	}
 	
-
+	public Corridor clone(){
+		Corridor retVal=new Corridor();
+		retVal.setEastDirection(this.eastDirection);
+		retVal.setWestDirection(this.westDirection);
+		retVal.setSouthDirection(this.southDirection);
+		retVal.setNorthDirection(this.northDirection);
+		
+		retVal.setxCoordinate(this.xCoordinate);
+		retVal.setyCoordinate(this.yCoordinate);
+		retVal.setTheChar(this.theChar);
+		this.setHasFlag(this.hasFlag);
+		this.setHasFlag(this.hasFlag);
+		this.setWall(this.isWall);
+		
+		return retVal;
+	}
 	
 }

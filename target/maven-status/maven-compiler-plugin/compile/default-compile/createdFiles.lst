@@ -1,3 +1,4 @@
-com/maze/Game.class
 com/maze/Corridor.class
+com/maze/Game.class
+com/maze/MoveResult.class
 com/maze/Maze.class

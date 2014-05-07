@@ -12,6 +12,7 @@ public class Maze {
 	private Corridor flagCorridor;
 	private Corridor currRoboCorridor;
 
+
 	public Corridor getStartCorridor(){
 	    return this.startCorridor;	
 	}
@@ -133,8 +134,175 @@ public class Maze {
 		return (theChar=='<'||theChar=='>'||theChar=='^'||theChar=='v');
 	}
 	
-	public Corridor getRoboPosition(){
+	public Corridor getCurrRoboCorridor(){
 		return this.currRoboCorridor;
+	}
+	
+	public MoveResult setCurrRoboCorridor(Corridor cor, char newDir){
+		MoveResult retVal=new MoveResult();
+		retVal.setMessage(MoveResult.CURR_ROBO_IS_NULL);
+		retVal.setResult(false);
+		if(null!=cor){
+			int xCor=cor.getxCoordinate();
+			int yCor=cor.getyCoordinate();
+
+			int x=this.currRoboCorridor.xCoordinate;
+			int y=this.currRoboCorridor.yCoordinate;
+			char dir=this.currRoboCorridor.getTheChar();
+			
+			int width=this.maze.length;
+			int height=this.maze[0].length;
+			
+			char dirCor=cor.getTheChar();
+            if(xCor>=width || xCor < 0 || yCor>=height || yCor<0){
+            	retVal.setMessage(MoveResult.OUT_OF_BOUNDS_MOVE);
+            }
+            else{
+            	if(dirCor!='*' ){
+            		//This is a north or south movement
+            		if(x==xCor){
+            			//This may be a turn
+            			if(y==yCor){
+            				//We are currently facing west
+            				if(dir=='<'){          					
+            					if(newDir=='v'||newDir=='^'){
+            						this.currRoboCorridor.setTheChar(newDir);
+            						retVal.setMessage(MoveResult.SUCCESSFUL_TURN);
+            						retVal.setResult(true);
+            					}
+            					else if(newDir=='<'){
+            						retVal.setMessage(MoveResult.ROBO_ALREADY_WEST);
+            					}
+            					else{
+            						retVal.setMessage(MoveResult.CANT_TURN_EAST);
+            					}
+            				}
+            				//We are currently facing south
+            				else if(dir=='v'){
+            					if(newDir=='<'||newDir=='>'){
+            						this.currRoboCorridor.setTheChar(newDir);
+            						retVal.setMessage(MoveResult.SUCCESSFUL_TURN);
+            						retVal.setResult(true);
+            					}
+            					else if(newDir=='v'){
+            						retVal.setMessage(MoveResult.ROBO_ALREADY_SOUTH);
+            					}
+            					else{
+            						retVal.setMessage(MoveResult.CANT_TURN_NORTH);
+            					}            					
+            				}
+            				//We are currently facing east
+            				else if(dir=='>'){
+            					if(newDir=='v'||newDir=='^'){
+            						this.currRoboCorridor.setTheChar(newDir);
+            						retVal.setMessage(MoveResult.SUCCESSFUL_TURN);
+            						retVal.setResult(true);
+            					}
+            					else if(newDir=='>'){
+            						retVal.setMessage(MoveResult.ROBO_ALREADY_EAST);
+            					}
+            					else{
+            						retVal.setMessage(MoveResult.CANT_TURN_WEST);
+            					}           					
+            				}
+            				//We are currently facing north
+            				else if(dir=='^'){
+            					if(newDir=='<'||newDir=='>'){
+            						this.currRoboCorridor.setTheChar(newDir);
+            						retVal.setMessage(MoveResult.SUCCESSFUL_TURN);
+            						retVal.setResult(true);
+            					}
+            					else if(newDir=='^'){
+            						retVal.setMessage(MoveResult.ROBO_ALREADY_NORTH);
+            					}
+            					else{
+            						retVal.setMessage(MoveResult.CANT_TURN_SOUTH);
+            					}           					
+            				}
+            			}
+            			//This is a movement
+            			else{
+            				//This is a northern movement
+            				if(yCor==(y+1)){
+            					//The robot must be facing north
+            					if(dir=='^' && dir==newDir){
+            						retVal.setResult(true);
+            						retVal.setMessage(MoveResult.SUCCESSFUL_MOVE);
+            						this.changeCurrRoboCorr(cor, newDir);
+            					}
+            					//The robot is not facing the right way
+            					else{
+            						retVal.setMessage(MoveResult.MUST_FACE_NORTH);
+            					}
+            				}
+            				//This is a southern movement
+            				else if(yCor==(y-1)){
+            					//The robot is facing in the right direction to move south
+            					if(dir=='V' && dir==newDir){
+            						retVal.setResult(true);
+            						retVal.setMessage(MoveResult.SUCCESSFUL_MOVE);	
+            						this.changeCurrRoboCorr(cor, newDir);
+            					}
+            					else{
+            						retVal.setMessage(MoveResult.MUST_FACE_SOUTH);
+            					}
+            				}
+            				else{
+            					retVal.setMessage(MoveResult.ILLEGAL_MOVE_NON_ADJACENT);
+            				}
+            			}
+            		}
+            		//This is a west or east movement
+            		else if(y==yCor){
+            			//Moving east
+            			if(xCor==(x+1)){
+            				//The robot is facing in the right direction to move east
+            				if(dir=='>' && dir==newDir){
+            					retVal.setResult(true);
+            					retVal.setMessage(MoveResult.SUCCESSFUL_MOVE);
+            					this.changeCurrRoboCorr(cor, newDir);
+            				}
+            				else{
+            					retVal.setMessage(MoveResult.MUST_FACE_EAST);
+            				}
+            			}
+            			//This is a western movement
+            			else if(xCor==(x-1)){
+            				//The robot is facing in the right direction to move west
+            				if(dir=='<' && dir==newDir){
+            					retVal.setResult(true);
+            					retVal.setMessage(MoveResult.SUCCESSFUL_MOVE);	
+            					this.changeCurrRoboCorr(cor, newDir);
+            				}
+            				else{
+            					retVal.setMessage(MoveResult.MUST_FACE_WEST);
+            				}
+            			}
+            			else{
+            				retVal.setMessage(MoveResult.ILLEGAL_MOVE_NON_ADJACENT);
+            			}
+            		}
+            		else{
+            			retVal.setMessage(MoveResult.ILLEGAL_MOVE_NON_ADJACENT);
+            		}
+            	}
+            	else{
+            		retVal.setMessage(MoveResult.CANNOT_MOVE_TO_WALL_CORRIDOR);
+            	}
+            }
+		}		
+		return retVal;
+	}
+	
+	private void changeCurrRoboCorr(Corridor cor, char newDir){
+		this.currRoboCorridor.setTheChar(' ');
+		this.currRoboCorridor=cor;
+		if(cor.getTheChar()!='F'){
+			this.currRoboCorridor.setTheChar(newDir);
+		}
+		else{
+			this.currRoboCorridor.setTheChar('!');
+		}
 	}
 	
 	public boolean canGoWest(){
@@ -186,26 +354,6 @@ public class Maze {
 		}
 	}
 	
-	public MoveResult goWest(){
-		MoveResult retVal=new MoveResult();
-		retVal.setResult(false);
-		char roboDirection=this.currRoboCorridor.getTheChar();
-		if(this.canGoWest()){
-			
-			if(roboDirection=='<'){
-
-				this.currRoboCorridor=this.currRoboCorridor.getWestDirection();
-				this.currRoboCorridor.set
-			}
-			else{
-				retVal.setMessage(MoveResult.MUST_FACE_WEST);
-			}
-		}
-		else{
-			retVal.setMessage(MoveResult.WEST_IS_A_WALL);
-		}
-		return retVal;
-	}
 	
 	public Maze(){
 		InputStream innyStream=Maze.class.getResourceAsStream("maze1.txt");
