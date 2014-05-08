@@ -295,13 +295,17 @@ public class Maze {
 	}
 	
 	private void changeCurrRoboCorr(Corridor cor, char newDir){
-		this.currRoboCorridor.setTheChar(' ');
-		this.currRoboCorridor=cor;
+		//this.currRoboCorridor.setTheChar(' ');	
+		this.maze[this.currRoboCorridor.getxCoordinate()][this.currRoboCorridor.yCoordinate].setTheChar(' ');
+		
+		this.currRoboCorridor=cor;		
 		if(cor.getTheChar()!='F'){
 			this.currRoboCorridor.setTheChar(newDir);
+			this.maze[cor.getxCoordinate()][cor.getyCoordinate()].setTheChar(newDir);
 		}
 		else{
 			this.currRoboCorridor.setTheChar('!');
+			this.maze[cor.getxCoordinate()][cor.getyCoordinate()].setTheChar('!');
 		}
 	}
 	
